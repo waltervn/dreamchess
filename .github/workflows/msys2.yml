@@ -23,11 +23,12 @@ jobs:
     - uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.sys}}
+        install: base-devel
         pacboy: cmake:p SDL2:p SDL2_image:p SDL2_mixer:p expat:p glew:p
 
     - uses: actions/checkout@v3
 
-    - name: Configure CMake
+    - name: Configure
       shell: msys2 {0}
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
