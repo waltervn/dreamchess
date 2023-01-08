@@ -16,6 +16,8 @@ jobs:
         sys:
           - mingw64
           - mingw32
+          - clang64
+          - clang32
 
     runs-on: windows-latest
 
