@@ -1,0 +1,33 @@
+name: MSYS2
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        sys:
+          - mingw64
+          - mingw32
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}
+        pacboy: cmake:p SDL2:p SDL2_image:p SDL2_mixer:p expat:p glew:p
+
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      shell: msys2 {0}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      shell: msys2 {0}
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
