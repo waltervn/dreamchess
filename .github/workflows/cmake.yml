@@ -25,6 +25,10 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get -y install gettext libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libglew-dev
 
+    - name: Install Windows Dependencies
+      if: matrix.os == 'windows-latest'
+      run: choco install -y winflexbison3
+
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
