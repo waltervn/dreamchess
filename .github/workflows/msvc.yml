@@ -21,7 +21,11 @@ jobs:
     runs-on: windows-2019
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: choco install -y winflexbison3
 
     - name: Install vcpkg
       uses: lukka/run-vcpkg@v10
@@ -34,6 +38,7 @@ jobs:
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
-    - run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+    - name: Disable vcpkg cache on error
+      run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
       if: ${{ failure() || cancelled() }}
       shell: bash
