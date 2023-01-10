@@ -1,0 +1,36 @@
+name: macOS
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  BUILD_TYPE: Release
+  VCPKG_OSX_DEPLOYMENT_TARGET: 10.11
+  MACOSX_DEPLOYMENT_TARGET: 10.11
+
+jobs:
+  build:
+    runs-on: macOS-11
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install vcpkg
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
+
+    - name: Configure
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+
+    - name: Build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Disable vcpkg cache on error
+      run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+      if: ${{ failure() || cancelled() }}
+      shell: bash
