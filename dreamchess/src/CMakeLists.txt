@@ -211,7 +211,7 @@ target_link_libraries(dreamchess
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     ${OPENGL_LIBRARY}
-    ${EXPAT_LIBRARY}
+    EXPAT::EXPAT
     ${Intl_LIBRARIES}
 )
 
