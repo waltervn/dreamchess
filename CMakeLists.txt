@@ -7,7 +7,7 @@ set(COPYRIGHT_YEAR 2019)
 option(BUILD_DREAMCHESS "Build DreamChess GUI" ON)
 option(BUILD_DREAMER "Build Dreamer chess engine" ON)
 
-set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
+#set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
