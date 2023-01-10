@@ -1,4 +1,4 @@
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -192,7 +192,6 @@ endif()
 
 target_include_directories(dreamchess
     PRIVATE
-    ${SDL2_INCLUDE_DIR}
     ${SDL2_IMAGE_INCLUDE_DIR}
     ${SDL2_MIXER_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
@@ -209,18 +208,12 @@ target_link_libraries(dreamchess
     GLEW::GLEW
     ${SDL2_IMAGE_LIBRARY}
     ${SDL2_MIXER_LIBRARY}
-    ${SDL2_LIBRARY}
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     ${OPENGL_LIBRARY}
     ${EXPAT_LIBRARY}
     ${Intl_LIBRARIES}
 )
-
-if(VCPKG_TOOLCHAIN)
-    target_link_libraries(dreamchess
-        SDL2::SDL2
-        SDL2::SDL2main
-    )
-endif()
 
 if(WIN32)
     target_link_libraries(dreamchess shlwapi)
