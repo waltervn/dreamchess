@@ -1,14 +1,4 @@
-# Disable our own FindSDL2.cmake for vcpkg
-if(VCPKG_TOOLCHAIN)
-    list(REMOVE_ITEM CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-endif()
-
 find_package(SDL2 REQUIRED)
-
-if(VCPKG_TOOLCHAIN)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-endif()
-
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(OpenGL REQUIRED)
