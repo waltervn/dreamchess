@@ -2,12 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 project(DreamChess VERSION 0.4.0 LANGUAGES C)
 
 set(DREAMCHESS_RELEASE FALSE)
-set(COPYRIGHT_YEAR 2019)
+set(COPYRIGHT_YEAR 2023)
 
 option(BUILD_DREAMCHESS "Build DreamChess GUI" ON)
 option(BUILD_DREAMER "Build Dreamer chess engine" ON)
-
-#set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)

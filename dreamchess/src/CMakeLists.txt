@@ -1,6 +1,10 @@
 find_package(SDL2 CONFIG REQUIRED)
+
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
+unset(CMAKE_FIND_PACKAGE_PREFER_CONFIG)
+
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(EXPAT REQUIRED)
@@ -206,7 +210,9 @@ target_include_directories(dreamchess
 target_link_libraries(dreamchess
     common
     GLEW::GLEW
+    $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,$<TARGET_NAME_IF_EXISTS:SDL2_image::SDL2_image-static>>
     ${SDL2_IMAGE_LIBRARY}
+    $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,$<TARGET_NAME_IF_EXISTS:SDL2_mixer::SDL2_mixer-static>>
     ${SDL2_MIXER_LIBRARY}
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
