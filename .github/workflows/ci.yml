@@ -75,7 +75,7 @@ jobs:
     - name: Install vcpkg
       uses: lukka/run-vcpkg@v10
       with:
-        vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
+        vcpkgGitCommitId: 'f14984af3738e69f197bf0e647a8dca12de92996'   # 2023.01.09
         prependedCacheKey: '${{ matrix.arch }}'
 
     - name: Configure
@@ -118,7 +118,7 @@ jobs:
     - name: Install vcpkg
       uses: lukka/run-vcpkg@v10
       with:
-        vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
+        vcpkgGitCommitId: 'f14984af3738e69f197bf0e647a8dca12de92996'   # 2023.01.09
 
     - name: Configure
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
