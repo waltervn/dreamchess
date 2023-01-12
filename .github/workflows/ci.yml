@@ -12,7 +12,9 @@ jobs:
 
     steps:
     - name: Install Dependencies
-      run: sudo apt-get -y install gettext libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libglew-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install gettext libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libglew-dev
 
     - uses: actions/checkout@v3
 
