@@ -244,7 +244,7 @@ if(WIN32)
 
     if(MSVC)
         install(CODE "
-            file(GLOB DLLS \"${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}/*.dll\")
+            file(GLOB DLLS \"$<TARGET_FILE_DIR:dreamchess>/*.dll\")
             file(INSTALL \${DLLS} DESTINATION \${CMAKE_INSTALL_PREFIX})
         ")
     endif()
