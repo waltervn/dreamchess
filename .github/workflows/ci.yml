@@ -59,9 +59,11 @@ jobs:
 
     strategy:
       matrix:
-        arch:
-          - x64
-          - Win32
+        include:
+        - name: Windows 11/10 64-bit      
+          arch: x64
+        - name: Windows 11/10 32-bit      
+          arch: Win32
 
     steps:
     - name: Checkout
@@ -86,6 +88,20 @@ jobs:
       run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
       if: ${{ failure() || cancelled() }}
       shell: bash
+
+    - name: Packaging
+      run: |
+        cd build
+        cpack -G ZIP -C ${{ env.BUILD_TYPE }}
+        cpack -G WIX -C ${{ env.BUILD_TYPE }}
+
+    - name: Uploading packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.name }}
+        path: |
+          build/*.zip
+          build/*.msi
 
   macos:
     name: macOS
