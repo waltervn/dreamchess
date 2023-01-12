@@ -60,9 +60,9 @@ jobs:
     strategy:
       matrix:
         include:
-        - name: Windows 11/10 64-bit      
+        - name: Windows 64-bit      
           arch: x64
-        - name: Windows 11/10 32-bit      
+        - name: Windows 32-bit      
           arch: Win32
 
     steps:
