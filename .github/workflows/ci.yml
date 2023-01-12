@@ -1,0 +1,114 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install Dependencies
+      run: sudo apt-get -y install gettext libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libglew-dev
+
+    - uses: actions/checkout@v3
+
+    - name: Configure
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build build
+
+  msys2:
+    name: MSYS2
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        sys:
+          - mingw64
+          - mingw32
+          - clang64
+          - clang32
+
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}
+        install: base-devel
+        pacboy: toolchain:p cmake:p SDL2:p SDL2_image:p SDL2_mixer:p expat:p glew:p
+
+    - uses: actions/checkout@v3
+
+    - name: Configure
+      shell: msys2 {0}
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      shell: msys2 {0}
+      run: cmake --build build
+
+  vs:
+    name: Visual Studio
+    runs-on: windows-2019
+
+    strategy:
+      matrix:
+        arch:
+          - x64
+          - Win32
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: choco install -y winflexbison3
+
+    - name: Install vcpkg
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
+        prependedCacheKey: '${{ matrix.arch }}'
+
+    - name: Configure
+      run: cmake -B build -G "Visual Studio 16 2019" -A ${{ matrix.arch }} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+
+    - name: Build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Disable vcpkg cache on error
+      run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+      if: ${{ failure() || cancelled() }}
+      shell: bash
+
+  macos:
+    name: macOS
+    runs-on: macOS-11
+
+    env:
+      VCPKG_OSX_DEPLOYMENT_TARGET: 10.11
+      CMAKE_OSX_DEPLOYMENT_TARGET: 10.11
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install vcpkg
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: '6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2'
+
+    - name: Configure
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Disable vcpkg cache on error
+      run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+      if: ${{ failure() || cancelled() }}
+      shell: bash
