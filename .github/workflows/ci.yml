@@ -130,3 +130,14 @@ jobs:
       run: echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
       if: ${{ failure() || cancelled() }}
       shell: bash
+
+    - name: Packaging
+      run: |
+        cd build
+        cpack -G DragNDrop -C ${{ env.BUILD_TYPE }}
+
+    - name: Uploading packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: macOS
+        path: build/*.dmg
