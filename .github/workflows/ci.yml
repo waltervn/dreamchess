@@ -109,7 +109,6 @@ jobs:
 
     env:
       MACOSX_DEPLOYMENT_TARGET: 10.11
-      VCPKG_TARGET_TRIPLET: x64-osx-dynamic
 
     steps:
     - name: Checkout
@@ -122,7 +121,7 @@ jobs:
         prependedCacheKey: '${{env.MACOSX_DEPLOYMENT_TARGET}}'
 
     - name: Configure
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
 
     - name: Build
       run: cmake --build build
