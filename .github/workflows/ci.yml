@@ -109,6 +109,7 @@ jobs:
 
     env:
       MACOSX_DEPLOYMENT_TARGET: 10.11
+      VCPKG_TARGET_TRIPLET: x64-osx-dynamic
 
     steps:
     - name: Checkout
@@ -118,10 +119,10 @@ jobs:
       uses: lukka/run-vcpkg@v10
       with:
         vcpkgGitCommitId: 'f14984af3738e69f197bf0e647a8dca12de92996'   # 2023.01.09
-        prependedCacheKey: '${{env.MACOSX_DEPLOYMENT_TARGET}}'
+        prependedCacheKey: '${{env.VCPKG_TARGET_TRIPLET}},${{env.MACOSX_DEPLOYMENT_TARGET}}'
 
     - name: Configure
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
 
     - name: Build
       run: cmake --build build
