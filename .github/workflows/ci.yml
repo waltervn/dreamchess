@@ -108,8 +108,7 @@ jobs:
     runs-on: macOS-11
 
     env:
-      VCPKG_OSX_DEPLOYMENT_TARGET: 10.11
-      CMAKE_OSX_DEPLOYMENT_TARGET: 10.11
+      MACOSX_DEPLOYMENT_TARGET: 10.11
 
     steps:
     - name: Checkout
