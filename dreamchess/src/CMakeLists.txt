@@ -78,8 +78,7 @@ if(MSVC)
     target_sources(dreamchess PRIVATE msvc/getopt.c msvc/getopt.h)
 endif()
 
-target_sources(dreamchess
-    PRIVATE
+target_sources(dreamchess PRIVATE
     audio/playlist.c
     audio/playlist.h
     audio/sdlmixer.c
@@ -89,8 +88,7 @@ target_sources(dreamchess
 source_group("Source Files\\audio" REGULAR_EXPRESSION /audio/.*.c$)
 source_group("Header Files\\audio" REGULAR_EXPRESSION /audio/.*.h$)
 
-target_sources(dreamchess
-    PRIVATE
+target_sources(dreamchess PRIVATE
     dialogs/configuration.c
     dialogs/ingame_dialog.c
     dialogs/message_dialog.c
@@ -105,8 +103,7 @@ target_sources(dreamchess
 source_group("Source Files\\dialogs" REGULAR_EXPRESSION /dialogs/.*.c$)
 source_group("Header Files\\dialogs" REGULAR_EXPRESSION /dialogs/.*.h$)
 
-target_sources(dreamchess
-    PRIVATE
+target_sources(dreamchess PRIVATE
     gamegui/action.c
     gamegui/align.c
     gamegui/bin.c
@@ -160,8 +157,7 @@ target_sources(dreamchess
 source_group("Source Files\\gamegui" REGULAR_EXPRESSION /gamegui/.*.c$)
 source_group("Header Files\\gamegui" REGULAR_EXPRESSION /include/gamegui/.*.h$)
 
-target_sources(dreamchess
-    PRIVATE
+target_sources(dreamchess PRIVATE
     gui/colours.c
     gui/credits.c
     gui/draw_scene.c
@@ -194,8 +190,7 @@ if(UNIX)
     target_compile_definitions(dreamchess PRIVATE -DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/dreamchess" -DLOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
 endif()
 
-target_include_directories(dreamchess
-    PRIVATE
+target_include_directories(dreamchess PRIVATE
     ${SDL2_IMAGE_INCLUDE_DIR}
     ${SDL2_MIXER_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
@@ -207,7 +202,7 @@ target_include_directories(dreamchess
     ${CMAKE_BINARY_DIR}
 )
 
-target_link_libraries(dreamchess
+target_link_libraries(dreamchess PRIVATE
     common
     GLEW::GLEW
     $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,$<TARGET_NAME_IF_EXISTS:SDL2_image::SDL2_image-static>>
@@ -222,7 +217,9 @@ target_link_libraries(dreamchess
 )
 
 if(WIN32)
-    target_link_libraries(dreamchess shlwapi)
+    target_link_libraries(dreamchess PRIVATE shlwapi)
+elseif(APPLE)
+    target_link_libraries(dreamchess PRIVATE "-framework CoreFoundation")
 endif()
 
 if(MSVC)
