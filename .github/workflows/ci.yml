@@ -19,7 +19,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Configure
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
 
     - name: Build
       run: cmake --build build
@@ -39,7 +39,7 @@ jobs:
     steps:
     - uses: msys2/setup-msys2@v2
       with:
-        msystem: ${{matrix.sys}}
+        msystem: ${{ matrix.sys }}
         install: base-devel
         pacboy: toolchain:p cmake:p SDL2:p SDL2_image:p SDL2_mixer:p expat:p glew:p
 
@@ -47,7 +47,7 @@ jobs:
 
     - name: Configure
       shell: msys2 {0}
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
 
     - name: Build
       shell: msys2 {0}
@@ -107,9 +107,20 @@ jobs:
     name: macOS
     runs-on: macOS-11
 
+    strategy:
+      matrix:
+        include:
+        - name: macOS 10.11+ (Intel)
+          arch: x86_64
+          target: 10.11
+          triplet: x64-osx-dynamic
+        - name: macOS 11+ (Apple Silicon)
+          arch: arm64
+          target: 11
+          triplet: arm64-osx-dynamic
+
     env:
-      MACOSX_DEPLOYMENT_TARGET: 10.11
-      VCPKG_TARGET_TRIPLET: x64-osx-dynamic
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target }}
 
     steps:
     - name: Checkout
@@ -119,10 +130,10 @@ jobs:
       uses: lukka/run-vcpkg@v10
       with:
         vcpkgGitCommitId: 'f14984af3738e69f197bf0e647a8dca12de92996'   # 2023.01.09
-        prependedCacheKey: '${{env.VCPKG_TARGET_TRIPLET}}+${{env.MACOSX_DEPLOYMENT_TARGET}}'
+        prependedCacheKey: '${{ matrix.triplet }}+${{ matrix.target }}'
 
     - name: Configure
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"
 
     - name: Build
       run: cmake --build build
@@ -140,5 +151,5 @@ jobs:
     - name: Uploading packages
       uses: actions/upload-artifact@v3
       with:
-        name: macOS
+        name: ${{ matrix.name }}
         path: build/*.dmg
