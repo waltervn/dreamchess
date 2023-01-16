@@ -75,7 +75,7 @@ jobs:
     - name: Install vcpkg
       uses: lukka/run-vcpkg@v10
       with:
-        vcpkgGitCommitId: 'f14984af3738e69f197bf0e647a8dca12de92996'   # 2023.01.09
+        vcpkgGitCommitId: 'fd766eba2b4cf59c7123d46189be373e2cee959d'   # 2023.01.09 with msys2 fix
         prependedCacheKey: '${{ matrix.arch }}'
 
     - name: Configure
