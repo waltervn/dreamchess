@@ -7,7 +7,7 @@ set(CPACK_WIX_TEMPLATE ${CMAKE_SOURCE_DIR}/dist/wix/WIX.template.in)
 set(CPACK_WIX_PRODUCT_ICON ${CMAKE_SOURCE_DIR}/dreamchess/src/win32.ico)
 
 if(APPLE)
-	set(CPACK_SYSTEM_NAME macOS)
+	set(CPACK_SYSTEM_NAME "macOS-${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
 include(CPack)
