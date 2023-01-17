@@ -119,14 +119,18 @@ jobs:
 
     - name: Upload release zip
       if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/github-script@v6
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: build/${{ env.ASSET_FILE }}
-        asset_name: ${{ matrix.name }} (ZIP)
-        asset_content_type: application/zip
+        script: |
+          const fs = require('fs');
+          await github.repos.uploadReleaseAsset({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: ${{ github.event.release.id }},
+            name: process.env.ASSET_FILE,
+            label: '${{ matrix.name }} (ZIP)',
+            data: await fs.readFileSync('build/' + process.env.ASSET_FILE)
+          });
 
   macos:
     name: macOS
