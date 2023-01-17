@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  release:
+    types: [created]
 
 env:
   BUILD_TYPE: Release
@@ -89,23 +93,38 @@ jobs:
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
-    - name: Packaging
+    - name: Create packages
       run: |
         cd build
         cpack -G ZIP -C ${{ env.BUILD_TYPE }}
         cpack -G WIX -C ${{ env.BUILD_TYPE }}
 
-    - name: Uploading zip
+    - name: Upload zip package
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.name }} (ZIP)
         path: build/*.zip
 
-    - name: Uploading installer
+    - name: Upload installer package
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.name }} (Installer)
         path: build/*.msi
+
+    - name: Locate zip package
+      if: github.event_name == 'release'
+      run: for /f "delims=" %a in ('dir /b build/*.zip') do echo "ASSET_FILE=%a" >> $GITHUB_ENV
+
+    - name: Upload release zip
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: build/${{ env.ASSET_FILE }}
+        asset_name: ${{ matrix.name }} (ZIP)
+        asset_content_type: application/zip
 
   macos:
     name: macOS
@@ -147,12 +166,12 @@ jobs:
     - name: Build
       run: cmake --build build
 
-    - name: Packaging
+    - name: Create package
       run: |
         cd build
         cpack -G DragNDrop -C ${{ env.BUILD_TYPE }}
 
-    - name: Uploading packages
+    - name: Upload package
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.name }}
