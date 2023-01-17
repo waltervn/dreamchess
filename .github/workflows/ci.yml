@@ -115,7 +115,7 @@ jobs:
 
     - name: Locate zip package
       if: github.event_name == 'release'
-      run: Add-Content -Path $Env:GITHUB_ENV -Encoding utf8 -Value "ASSET_FILE=$(@(Get-ChildItem build/*.zip).Name[0])"
+      run: Add-Content -Path $Env:GITHUB_ENV -Encoding utf8 -Value "ASSET_FILE=$(@(Get-ChildItem build/*.zip)[0].Name)"
 
     - name: Upload release zip
       if: github.event_name == 'release'
