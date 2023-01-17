@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches:
   pull_request:
   release:
     types: [created]
@@ -113,7 +114,7 @@ jobs:
 
     - name: Locate zip package
       if: github.event_name == 'release'
-      run: for /f "delims=" %a in ('dir /b build/*.zip') do echo "ASSET_FILE=%a" >> $GITHUB_ENV
+      run: "ASSET_FILE="+(ls build/*.zip).Name[0] >> $GITHUB_ENV
 
     - name: Upload release zip
       if: github.event_name == 'release'
