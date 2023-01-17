@@ -60,9 +60,9 @@ jobs:
     strategy:
       matrix:
         include:
-        - name: Windows 64-bit      
+        - name: Windows 10+ 64-bit      
           arch: x64
-        - name: Windows 32-bit      
+        - name: Windows 10+ 32-bit      
           arch: Win32
 
     steps:
@@ -95,13 +95,17 @@ jobs:
         cpack -G ZIP -C ${{ env.BUILD_TYPE }}
         cpack -G WIX -C ${{ env.BUILD_TYPE }}
 
-    - name: Uploading packages
+    - name: Uploading zip
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.name }}
-        path: |
-          build/*.zip
-          build/*.msi
+        name: ${{ matrix.name }} (ZIP)
+        path: build/*.zip
+
+    - name: Uploading installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.name }} (Installer)
+        path: build/*.msi
 
   macos:
     name: macOS
