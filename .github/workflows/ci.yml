@@ -59,17 +59,21 @@ jobs:
       shell: msys2 {0}
       run: cmake --build build
 
-  vs:
-    name: Visual Studio
+  windows:
+    name: Windows
     runs-on: windows-2019
 
     strategy:
       matrix:
         include:
-        - name: Windows 10+ 64-bit      
+        - version: 64-bit
           arch: x64
-        - name: Windows 10+ 32-bit      
+        - version: 32-bit
           arch: Win32
+
+    env:
+      ZIP_ASSET_LABEL: Windows 10 (${{ matrix.version }}, ZIP)
+      MSI_ASSET_LABEL: Windows 10 (${{ matrix.version }}, Installer)
 
     steps:
     - name: Checkout
@@ -101,36 +105,38 @@ jobs:
         cpack -G ZIP -C ${{ env.BUILD_TYPE }}
         cpack -G WIX -C ${{ env.BUILD_TYPE }}
 
-    - name: Upload zip package
+    - name: Upload zip artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.name }} (ZIP)
+        name: ${{ env.ZIP_ASSET_LABEL }}
         path: build/*.zip
 
-    - name: Upload installer package
+    - name: Upload installer artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.name }} (Installer)
+        name: ${{ env.MSI_ASSET_LABEL }}
         path: build/*.msi
 
-    - name: Locate zip package
-      if: github.event_name == 'release'
-      run: Add-Content -Path $Env:GITHUB_ENV -Encoding utf8 -Value "ASSET_FILE=$(@(Get-ChildItem build/*.zip)[0].Name)"
-
-    - name: Upload release zip
+    - name: Upload release packages
       if: github.event_name == 'release'
       uses: actions/github-script@v6
       with:
         script: |
-          const fs = require('fs');
-          await github.rest.repos.uploadReleaseAsset({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: ${{ github.event.release.id }},
-            name: process.env.ASSET_FILE,
-            label: '${{ matrix.name }} (ZIP)',
-            data: await fs.readFileSync('build/' + process.env.ASSET_FILE)
-          });
+          process.chdir('build')
+
+          const fs = require('fs')
+          const globber = await glob.create('*.zip\n*.msi')
+
+          for await (const file of globber.globGenerator()) {
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ github.event.release.id }},
+              name: file,
+              label: file.includes('.zip') ? process.env.ZIP_ASSET_LABEL : process.env.MSI_ASSET_LABEL,
+              data: await fs.readFileSync(file)
+            })
+          }
 
   macos:
     name: macOS
@@ -177,7 +183,7 @@ jobs:
         cd build
         cpack -G DragNDrop -C ${{ env.BUILD_TYPE }}
 
-    - name: Upload package
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.name }}
